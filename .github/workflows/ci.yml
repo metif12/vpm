@@ -14,17 +14,17 @@ jobs:
           repository: vlang/v
       - name: Checkout VPM
         id: checkout_vpm
-        if: ${{ !cancelled() && steps.checkout_v.outcome == 'success' }}
+        if: ${{ success() && !cancelled() && steps.checkout_v.outcome == 'success' }}
         uses: actions/checkout@v2
         with:
           path: vpm
       - name: Build V
         id: build_v
-        if: ${{ !cancelled() && steps.checkout_vpm.outcome == 'success' }}
+        if: ${{ success() && !cancelled() && steps.checkout_vpm.outcome == 'success' }}
         run: make
       - name: v fmt -verify
         id: v_fmt_verify
-        if: ${{ !cancelled() && steps.build_v.outcome == 'success' }}
+        if: ${{ success() && !cancelled() && steps.build_v.outcome == 'success' }}
         run: |
           cd vpm
           ../v install
@@ -46,17 +46,17 @@ jobs:
           repository: vlang/v
       - name: Checkout VPM
         id: checkout_vpm
-        if: ${{ !cancelled() && steps.checkout_v.outcome == 'success' }}
+        if: ${{ success() && !cancelled() && steps.checkout_v.outcome == 'success' }}
         uses: actions/checkout@v2
         with:
           path: vpm
       - name: Install dependencies
         id: install_dependencies
-        if: ${{ !cancelled() && steps.checkout_vpm.outcome == 'success' }}
+        if: ${{ success() && !cancelled() && steps.checkout_vpm.outcome == 'success' }}
         run: sudo apt-get install --quiet -y postgresql libpq-dev libssl-dev
       - name: Start PostgreSQL for tests
         id: start_postgresql_for_tests
-        if: ${{ !cancelled() && steps.install_dependencies.outcome == 'success' }}
+        if: ${{ success() && !cancelled() && steps.install_dependencies.outcome == 'success' }}
         run: |
           sudo systemctl start postgresql.service
           sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
@@ -66,18 +66,18 @@ jobs:
           sudo systemctl restart postgresql.service
       - name: Build V
         id: build_v
-        if: ${{ !cancelled() && steps.start_postgresql_for_tests.outcome == 'success' }}
+        if: ${{ success() && !cancelled() && steps.start_postgresql_for_tests.outcome == 'success' }}
         run: make
       - name: Run tests
         id: run_tests
-        if: ${{ !cancelled() && steps.build_v.outcome == 'success' }}
+        if: ${{ success() && !cancelled() && steps.build_v.outcome == 'success' }}
         run: |
           cd vpm
           ../v install
           ../v test .
       - name: Build VPM
         id: build_vpm
-        if: ${{ !cancelled() && steps.run_tests.outcome == 'success' }}
+        if: ${{ success() && !cancelled() && steps.run_tests.outcome == 'success' }}
         run: |
           cd vpm
           ../v install
